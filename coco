@@ -1,0 +1,532 @@
+import React, { useState, useEffect } from 'react';
+
+const App = () => {
+  // Datos de la planilla CSV como una cadena de texto, con la información actualizada.
+  const csvData = `Prendas,Sin Marca / Marca básica - Prendas en perfecto estado / Modelo actual / Últimos 3 años / Tendencia,Marcas discontinuadas - Prendas con detalles de uso / Vintage / Estilo / Buenos géneros,Marca B - Prendas en perfecto estado / Modelo vintage/ Más de 3 años/,Marca B - Prendas con detalles de uso / De calidad / Modelo actual / Últimos 3 años / Tendencia,Marca B - Prendas en perfecto estado / Modelo actual / Últimos 3 años / Tendencia,Marca A - Prendas en perfecto estado / Modelo vintage / Más de 3 años,Marca A - Prendas con detalles de uso / De calidad / Modelo actual / Últimos 3 años / Tendencia,Marca A - Prendas en perfecto estado / Modelo actual / Últimos 3 años / Tendencia
+Musculosa básica,4959,5950,5950,7438,8926,8926,10744,12893
+Remera básica lisa,6198,7438,7438,9504,11157,11157,13388,16116
+Remera estampada,8099,9752,9752,12231,14628,14628,17769,21322
+Remera con recursos,9917,11901,11901,14876,17851,17851,21488,25785
+Body básico morley o algodón,7025,8430,8430,10744,12645,12645,15207,18182
+Body con textil especial,12397,14876,14876,18595,22314,22314,26777,32231
+Blusa básica,12397,14876,14876,18595,22314,22314,26777,32231
+Blusa de autor,14876,17851,17851,22314,26777,26777,32231,38678
+Camisa básica / estampa,14876,17851,17851,22314,26777,26777,32231,38678
+Camisa de diseño,18182,21818,21818,27273,32727,32727,39256,47107
+Sweater/Buzo liviano,13223,15868,15868,19835,23802,23802,28512,34215
+Sweater/Buzo grosor intermedio,14876,17851,17851,22314,26777,26777,32149,38595
+Sweater/Buzo grueso,16529,19835,19835,24793,29752,29752,35702,42893
+Blazer sin forro,18182,21818,21818,27273,32727,32727,39256,47107
+Blazer estructurado,20661,24793,24793,30992,37190,37190,50000,60000
+Blazer de diseño/satrero buena confeccion,24793,29752,29752,37190,44628,44628,53554,64264
+Campera deportiva sin frisa,18182,21818,21818,27273,32727,32727,39256,47107
+Campera deportiva con frisa,19835,23802,23802,29752,35702,35702,42893,51488
+Campera tipo jeanera,20661,24793,24793,30992,37190,37190,44628,53554
+Campera puffer ligera,26446,31736,31736,39669,47603,47603,57025,68430
+Campera puffer intermedia,31405,37686,37686,47107,56529,56529,67769,81322
+Campera puffer gruesa (de nieve) / pluma / gamulán,NO TOMAR EN VERANO,44628,44628,55785,66942,66942,80331,96446
+Campera tipo parkas básica,31405,37686,37686,47107,56529,56529,67769,81322
+Campera tipo parkas desmontable (forro interior),NO TOMAR EN VERANO,44628,44628,55785,66942,66942,80331,96446
+Campera de abrigo con forro tipo teddy (peluche),NO TOMAR EN VERANO,31736,31736,39669,47603,47603,57025,68430
+Campera de abrigo camisaco de lana,NO TOMAR EN VERANO,35702,35702,44628,53554,53554,64298,77190
+Campera de abrigo de lana técnica (ej. Patagonia),NO TOMAR EN VERANO,39669,39669,49587,59504,59504,71405,85702
+Tapado / saco corto,28926,34711,34711,43388,52066,52066,62479,74959
+Tapado / saco largo,33058,39669,39669,49587,59504,59504,71405,85702
+Saco de cuero corto,45455,54545,54545,68182,81818,81818,98182,117851
+Saco de cuero largo,53719,64463,64463,80579,96694,96694,116033,139256
+Vestidos básicos,16529,19835,19835,24793,29752,29752,35702,42893
+Vestidos textil especial,20661,24793,24793,30992,37190,37190,44628,53554
+Vestidos con recursos,23140,27769,27769,34711,53719,53719,64463,77355
+Jeans,16529,19835,19835,24793,29752,29752,35702,42893
+pantalón tela y corte básicos,13223,15868,15868,19835,23802,23802,28512,34215
+pantalón sastreros,14876,17851,17851,22314,26777,26777,32231,38678
+pantalón tela o corte especial o cuero,18182,21818,21818,27273,32727,32727,39256,47107
+Faldas tela básica o jean,9917,11901,11901,14876,17851,17851,21488,25785
+Faldas media/larga con corte especial,14876,17851,17851,22314,26777,26777,32231,38678
+falda de autor o cuero,18182,18182,18182,22727,28409,28409,34091,40909
+Shorts / bermudas tela básica o jean,12397,14876,14876,18595,22314,22314,26777,33471
+Shorts / bermudas con corte especial,14876,17851,17851,22314,26777,26777,32231,40331
+Calzas,12397,14876,14876,18595,22314,22314,26777,33471
+Traje de baño entera / dos piezas,20661,24793,24793,30992,37190,37190,44628,55785
+solo top,12397,14876,14876,18595,22314,22314,26777,33471
+solo bombacha,12397,14876,14876,18595,22314,22314,26777,33471
+Carteras pequeña CUERO,16529,19835,19835,24793,29752,29752,35702,44628
+Carteras mediana/grande CUERO,24793,29752,29752,37190,44628,44628,53554,66942
+Carteras pequeña no cuero,12397,14876,14876,18595,22314,22314,26777,33471
+Carteras mediana/grande no cuero,18182,21818,21818,27273,32727,32727,39256,49091
+Bolsos / Mochilas pequeño,14876,17851,17851,22314,26777,26777,32231,40331
+Bolsos / Mochilas mediano/grande,23140,27769,27769,34711,41653,41653,50000,62562
+Billeteras,7438,8926,8926,11157,13388,13388,16116,20165
+Gorros,7025,8430,8430,10537,12645,12645,15207,19008
+Anteojos,9917,11901,11901,14876,17851,17851,21488,26860
+Pañuelos pequeño,5785,6942,6942,8678,10413,10413,12397,15537
+Pañuelos mediano/grande,8264,9917,9917,12397,14876,14876,17851,22314
+Calzado zapatillas urbanas / runing,16529,19835,19835,24793,29752,29752,35702,44628
+Calzado zapatillas cuero,28926,34711,34711,43388,52066,52066,62479,78099
+Calzado sandalias / zapatos,14876,17851,17851,22314,26777,26777,32231,40331
+Calzado botas / acordonados,16529,19835,19835,24793,29752,29752,35702,44628
+Calzado botas / acordonados (cuero),28926,34711,34711,43388,52066,52066,62479,78099
+`;
+
+  // Datos para la búsqueda de marcas
+  const brandData = {
+    '47 street': 'Marca B',
+    'A+': 'Marca B',
+    'Abercrombie': 'Marca B',
+    'Adolfo Dominguez': 'Marca B',
+    'Adriana Constantini': 'Marca B',
+    'Agustina Saquer': 'Marca B',
+    'Akiabara': 'Marca B',
+    'Allo Martinez': 'Marca B',
+    'Americanino': 'Marca B',
+    'Ask denim': 'Marca B',
+    'Awada': 'Marca B',
+    'Ayres': 'Marca B',
+    'Banana Republic': 'Marca B',
+    'Basement': 'Marca B',
+    'Bendeyan': 'Marca B',
+    'Bendito Pie': 'Marca B',
+    'Benetton (especial- A)': 'Marca B',
+    'Benito Fenandez': 'Marca B',
+    'Bershka': 'Marca B',
+    'Bestia oficial': 'Marca B',
+    'Billabong': 'Marca B',
+    'Blaque': 'Marca B',
+    'Bowen': 'Marca B',
+    'Brooksfield': 'Marca B',
+    'C1rca': 'Marca B',
+    'Cacharel': 'Marca B',
+    'Camaron Brujo': 'Marca B',
+    'Cardon': 'Marca B',
+    'Cenizas': 'Marca B',
+    'Chocolate': 'Marca B',
+    'Como quieres...': 'Marca B',
+    'COMPLOT': 'Marca B',
+    'Converse': 'Marca B',
+    'Cook': 'Marca B',
+    'Jhon L. Cook': 'Marca B',
+    'De la Ostia': 'Marca B',
+    'Desiderata': 'Marca B',
+    'Desigual': 'Marca B',
+    'Divided (H&M)': 'Marca B',
+    'Disorder': 'Marca B',
+    'Demiracolo': 'Marca B',
+    'Ciriart': 'Marca B',
+    'Element': 'Marca B',
+    'Enlighted clothing': 'Marca B',
+    'Felix': 'Marca B',
+    'Ferraro': 'Marca B',
+    'Fila': 'Marca B',
+    'Forever 21': 'Marca B',
+    'Furzai': 'Marca B',
+    'Gap': 'Marca B',
+    'Garson Garcia': 'Marca B',
+    'Giesso': 'Marca B',
+    'Gola': 'Marca B',
+    'H&M': 'Marca B',
+    'Harvey & Willys': 'Marca B',
+    'Holliester': 'Marca B',
+    'Hush Puppies': 'Marca B',
+    'India Style': 'Marca B',
+    'Inedita': 'Marca B',
+    'Juana de Arco': 'Marca B',
+    'Kevingston': 'Marca B',
+    'Key Biscayne': 'Marca B',
+    'La Martina': 'Marca B',
+    'Lazaro': 'Marca B',
+    'Le cop Sporting': 'Marca B',
+    'Lee': 'Marca B',
+    'Levis': 'Marca B',
+    'Lollipop': 'Marca B',
+    'Low low': 'Marca B',
+    'Lulu Martins': 'Marca B',
+    'Lupe': 'Marca B',
+    'Luz Ballestero': 'Marca B',
+    'Madness Clothin': 'Marca B',
+    'Maggio Rosseto': 'Marca B',
+    'Mango': 'Marca B',
+    'Maria Vazquez': 'Marca B',
+    'Markova': 'Marca B',
+    'Materia': 'Marca B',
+    'Millie': 'Marca B',
+    'Muaa': 'Marca B',
+    'Munay': 'Marca B',
+    'Nana': 'Marca B',
+    'Naum': 'Marca B',
+    'Nare': 'Marca B',
+    'New Balance': 'Marca B',
+    'Ona Saez': 'Marca B',
+    'Ossira': 'Marca B',
+    'Panorama': 'Marca B',
+    'Paruolo': 'Marca B',
+    'Paula Cahen Danvers': 'Marca B',
+    'Pepe Canteros': 'Marca B',
+    'Persaman NY': 'Marca B',
+    'Petit M': 'Marca B',
+    'Peuque': 'Marca B',
+    'Pink (Victoria\'s Secret)': 'Marca B',
+    'Polo Ralph Lauren': 'Marca B',
+    'Polvora': 'Marca B',
+    'Pony': 'Marca B',
+    'Portsaid': 'Marca B',
+    'Shibinda': 'Marca B',
+    'Posse': 'Marca B',
+    'Priscila Bella': 'Marca B',
+    'Protesta': 'Marca B',
+    'Prune': 'Marca B',
+    'Pull & Bear': 'Marca B',
+    'Puma': 'Marca B',
+    'Quicksilver': 'Marca B',
+    'Reebook': 'Marca B',
+    'Revolver': 'Marca B',
+    'Rica': 'Marca B',
+    'Ricky Sarkany': 'Marca B',
+    'Rie': 'Marca B',
+    'Ripcurl': 'Marca B',
+    'Square': 'Marca B',
+    'St Marie': 'Marca B',
+    'Stradivarius': 'Marca B',
+    'Suicidal trend': 'Marca B',
+    'Sybyl Vane': 'Marca B',
+    'System (Portsaid)': 'Marca B',
+    'Tascani': 'Marca B',
+    'The market': 'Marca B',
+    'This is Feliz Navidad': 'Marca B',
+    'Tommy Hilfiger': 'Marca B',
+    'Top Shop': 'Marca B',
+    'Topper': 'Marca B',
+    'Tucci': 'Marca B',
+    'Unitivo': 'Marca B',
+    'Uma': 'Marca B',
+    'Ver': 'Marca B',
+    'Vitamina': 'Marca B',
+    'Vevu': 'Marca B',
+    'Victoria Secret': 'Marca B',
+    'Volcom': 'Marca B',
+    'Wanama': 'Marca B',
+    'Wrangler': 'Marca B',
+    'Wttj': 'Marca B',
+    'Yagmour': 'Marca B',
+    'Zara': 'Marca B',
+    'Uniqlo': 'Marca B',
+    'Dolls Kill': 'Marca B',
+    'Prototype': 'Marca B',
+    'Adidas': 'Marca A',
+    'Amores trash couture': 'Marca A',
+    'Armani': 'Marca A',
+    'Ay Not Dead': 'Marca A',
+    'Bensimon': 'Marca A',
+    'Black Mamba': 'Marca A',
+    'Bolivia': 'Marca A',
+    'Burberry': 'Marca A',
+    'Cala / Calandra': 'Marca A',
+    'Calvin Klein': 'Marca A',
+    'Chanel': 'Marca A',
+    'Chirstian Lacroix': 'Marca A',
+    'Cibeles': 'Marca A',
+    'Clara Ibarguren': 'Marca A',
+    'Cloetas': 'Marca A',
+    'Columbia': 'Marca A',
+    'Cora Groppo': 'Marca A',
+    'Diesel': 'Marca A',
+    'Dior': 'Marca A',
+    'Dolce & Gabbana': 'Marca A',
+    'El Burgués': 'Marca A',
+    'Evangelina Bomparola': 'Marca A',
+    'Etiqueta Negra': 'Marca A',
+    'Fendi': 'Marca A',
+    'Ginebra': 'Marca A',
+    'Gucci': 'Marca A',
+    'Guess': 'Marca A',
+    'Balenciaga': 'Marca A',
+    'Herencia': 'Marca A',
+    'Hermes': 'Marca A',
+    'Hugo Boss': 'Marca A',
+    'Hunter': 'Marca A',
+    'Jackie Smith': 'Marca A',
+    'Jazmin Chebar': 'Marca A',
+    'Juanita Jo': 'Marca A',
+    'Justa Petra': 'Marca A',
+    'Kosiuko': 'Marca A',
+    'Kostume': 'Marca A',
+    'Lacoste': 'Marca A',
+    'Las Oreiro': 'Marca A',
+    'Las Pepas': 'Marca A',
+    'Louis Vuitton': 'Marca A',
+    'Maria Cher': 'Marca A',
+    'Massimo Dutti': 'Marca A',
+    'Max Mara': 'Marca A',
+    'Mila Kartei': 'Marca A',
+    'Mishka': 'Marca A',
+    'Miss Sisty': 'Marca A',
+    'Montagne': 'Marca A',
+    'Naima': 'Marca A',
+    'Natalia Antolin': 'Marca A',
+    'Nike': 'Marca A',
+    'Nous Etudions': 'Marca A',
+    'Pablo Ramirez': 'Marca A',
+    'Paris': 'Marca A',
+    'Penguin': 'Marca A',
+    'Perramus': 'Marca A',
+    'Peter Kent': 'Marca A',
+    'Prada': 'Marca A',
+    'Ralph Lauren': 'Marca A',
+    'Rapsodia': 'Marca A',
+    'Salvatore Ferragamo': 'Marca A',
+    'Sofia Sarkany': 'Marca A',
+    'The Ann Wagners': 'Marca A',
+    'The North Face': 'Marca A',
+    'Timberland': 'Marca A',
+    'jtbyjt (Trosman)': 'Marca A',
+    'Valdez': 'Marca A',
+    'Vanesa Krongold': 'Marca A',
+    'Vans': 'Marca A',
+    'Versace': 'Marca A',
+    'Carven': 'Marca A',
+    'Fiorucci': 'Marca A',
+    'Halston': 'Marca A',
+    'Carmen Steffens': 'Marca A',
+    'Anushka Elliot': 'Marca A',
+    'Anine Bing': 'Marca A',
+  };
+
+  const [data, setData] = useState([]);
+  const [garmentOptions, setGarmentOptions] = useState([]);
+  const [categoryOptions, setCategoryOptions] = useState([]);
+  const [selectedGarment, setSelectedGarment] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('');
+  const [result, setResult] = useState(null);
+  const [error, setError] = useState('');
+
+  const [garmentSearchQuery, setGarmentSearchQuery] = useState('');
+  const [showGarmentDropdown, setShowGarmentDropdown] = useState(false);
+  
+  const [brandSearchQuery, setBrandSearchQuery] = useState('');
+  const [showBrandDropdown, setShowBrandDropdown] = useState(false);
+  const [brandResult, setBrandResult] = useState('');
+
+  useEffect(() => {
+    const parseCsv = (csv) => {
+      const lines = csv.trim().split('\n');
+      const headers = lines[0].split(',').map(header => header.trim());
+      const parsedData = lines.slice(1).map(line => {
+        const values = line.split(',').map(value => value.trim());
+        const rowObject = headers.reduce((obj, header, index) => {
+          obj[header] = values[index] || '';
+          return obj;
+        }, {});
+        return rowObject;
+      });
+      return parsedData;
+    };
+
+    const parsedData = parseCsv(csvData);
+    setData(parsedData);
+
+    const garments = [...new Set(parsedData.map(item => item.Prendas))].filter(g => g && g !== 'nan' && g !== '0');
+    setGarmentOptions(garments);
+    
+    const headers = Object.keys(parsedData[0] || {});
+    const categories = headers.filter(key => key !== 'Prendas' && key !== 'nan' && key.trim() !== '');
+    setCategoryOptions(categories);
+
+    if (garments.length > 0) {
+      setSelectedGarment(garments[0]);
+      setGarmentSearchQuery(garments[0]);
+    }
+    if (categories.length > 0) {
+      setSelectedCategory(categories[0]);
+    }
+  }, [csvData]);
+
+  useEffect(() => {
+    if (selectedGarment && selectedCategory && data.length > 0) {
+      const row = data.find(item => item.Prendas === selectedGarment);
+      if (row && row[selectedCategory] !== undefined) {
+        const value = row[selectedCategory];
+        if (value === 'NO APLICA' || value === 'nan' || value === '0' || !value) {
+          setResult(null);
+          setError(`El valor para esta combinación es "${value}".`);
+        } else {
+          setResult(value);
+          setError('');
+        }
+      } else {
+        setResult(null);
+        setError('No se encontró un valor para esta combinación. Por favor, revisa la planilla.');
+      }
+    }
+  }, [selectedGarment, selectedCategory, data]);
+
+  const handleBrandSelect = (brand) => {
+    setBrandSearchQuery(brand);
+    setShowBrandDropdown(false);
+    const result = brandData[brand];
+    setBrandResult(result ? `La marca "${brand}" es de tipo: ${result}` : 'Marca no encontrada. Por favor, verifica el nombre.');
+  };
+
+  // Filtra las marcas que COMIENZAN con la consulta de búsqueda
+  const filteredBrands = Object.keys(brandData).filter(brand => 
+    brand.toLowerCase().startsWith(brandSearchQuery.toLowerCase())
+  );
+
+  const handleGarmentSearch = (e) => {
+    setGarmentSearchQuery(e.target.value);
+    setShowGarmentDropdown(true);
+    setSelectedGarment('');
+  };
+
+  const handleGarmentSelect = (option) => {
+    setSelectedGarment(option);
+    setGarmentSearchQuery(option);
+    setShowGarmentDropdown(false);
+  };
+
+  const handleCategorySelect = (e) => {
+    setSelectedCategory(e.target.value);
+  };
+
+  const filteredGarments = garmentOptions.filter(option => 
+    option.toLowerCase().includes(garmentSearchQuery.toLowerCase())
+  );
+
+  return (
+    <div className="flex items-center justify-center min-h-screen bg-gray-100 p-4 font-sans">
+      <div className="bg-white p-8 rounded-2xl shadow-xl max-w-lg w-full">
+        {/* Sección del logo */}
+        <div className="flex justify-center mb-6">
+          <img
+            src="/_api/file_content/uploaded:Captura de pantalla 2025-08-09 a la(s) 18.02.24.png-482907d3-cd41-48d3-98bd-2934a4700909"
+            alt="Logo de la marca"
+            className="h-20 w-20 rounded-full"
+          />
+        </div>
+
+        {/* Sección de búsqueda de marcas */}
+        <div className="mb-12">
+            <h2 className="text-2xl font-bold text-center text-gray-800 mb-4">Buscador de Marcas</h2>
+            <div className="relative">
+                <label htmlFor="brand-search" className="block text-sm font-medium text-gray-700 mb-2">
+                    Ingresa el nombre de la marca:
+                </label>
+                <input
+                    id="brand-search"
+                    type="text"
+                    value={brandSearchQuery}
+                    onChange={(e) => setBrandSearchQuery(e.target.value)}
+                    onFocus={() => setShowBrandDropdown(true)}
+                    onBlur={() => setTimeout(() => setShowBrandDropdown(false), 200)}
+                    className="mt-1 block w-full pl-3 pr-10 py-3 text-base border-gray-300 focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm rounded-lg shadow-sm transition duration-150 ease-in-out"
+                    placeholder="Escribe para buscar..."
+                />
+                 {showBrandDropdown && filteredBrands.length > 0 && (
+                    <ul className="absolute z-10 w-full bg-white border border-gray-300 rounded-lg shadow-lg mt-1 max-h-60 overflow-auto">
+                        {filteredBrands.map((brand, index) => (
+                            <li
+                                key={index}
+                                onMouseDown={() => handleBrandSelect(brand)}
+                                className="p-3 hover:bg-purple-100 cursor-pointer text-sm"
+                            >
+                                {brand}
+                            </li>
+                        ))}
+                    </ul>
+                )}
+                {showBrandDropdown && filteredBrands.length === 0 && (
+                    <div className="absolute z-10 w-full bg-white border border-gray-300 rounded-lg shadow-lg mt-1 p-3 text-sm text-gray-500">
+                        No se encontraron resultados.
+                    </div>
+                )}
+            </div>
+            <div className="mt-4 p-4 min-h-[4rem] bg-purple-50 rounded-xl border border-purple-200 shadow-inner flex items-center justify-center">
+                <p className="text-lg font-medium text-purple-700 text-center">
+                    {brandResult || 'El tipo de marca aparecerá aquí.'}
+                </p>
+            </div>
+        </div>
+
+        <hr className="my-12 border-gray-300" />
+        
+        <h1 className="text-3xl font-bold text-center text-gray-800 mb-6">Buscador de Precios</h1>
+        <p className="text-gray-600 text-center mb-8">Selecciona una prenda y una categoría para ver el precio.</p>
+
+        <div className="space-y-6 mb-8">
+          <div className="relative">
+            <label htmlFor="garment-search" className="block text-sm font-medium text-gray-700 mb-2">
+              Busca el tipo de prenda:
+            </label>
+            <input
+              id="garment-search"
+              type="text"
+              value={garmentSearchQuery}
+              onChange={handleGarmentSearch}
+              onFocus={() => setShowGarmentDropdown(true)}
+              onBlur={() => setTimeout(() => setShowGarmentDropdown(false), 200)}
+              className="mt-1 block w-full pl-3 pr-10 py-3 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-lg shadow-sm transition duration-150 ease-in-out"
+              placeholder="Escribe para buscar..."
+            />
+            {showGarmentDropdown && filteredGarments.length > 0 && (
+              <ul className="absolute z-10 w-full bg-white border border-gray-300 rounded-lg shadow-lg mt-1 max-h-60 overflow-auto">
+                {filteredGarments.map((option, index) => (
+                  <li
+                    key={index}
+                    onMouseDown={() => handleGarmentSelect(option)}
+                    className="p-3 hover:bg-indigo-100 cursor-pointer text-sm"
+                  >
+                    {option}
+                  </li>
+                ))}
+              </ul>
+            )}
+             {showGarmentDropdown && filteredGarments.length === 0 && (
+              <div className="absolute z-10 w-full bg-white border border-gray-300 rounded-lg shadow-lg mt-1 p-3 text-sm text-gray-500">
+                No se encontraron resultados.
+              </div>
+            )}
+          </div>
+
+          <div>
+            <label htmlFor="category-select" className="block text-sm font-medium text-gray-700 mb-2">
+              Selecciona la categoría de precio:
+            </label>
+            <select
+              id="category-select"
+              value={selectedCategory}
+              onChange={handleCategorySelect}
+              className="mt-1 block w-full pl-3 pr-10 py-3 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-lg shadow-sm transition duration-150 ease-in-out"
+            >
+              {categoryOptions.map((option, index) => (
+                <option key={index} value={option}>
+                  {option}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+
+        <div className="mt-8">
+            <h2 className="text-2xl font-bold text-center text-gray-800 mb-4">Resultado</h2>
+            <div className="flex items-center justify-center min-h-[6rem] bg-indigo-50 rounded-xl border border-indigo-200 shadow-inner p-4">
+              {result && (
+                <span className="text-4xl font-extrabold text-indigo-700">
+                  ${result}
+                </span>
+              )}
+              {error && (
+                <span className="text-lg font-medium text-red-500 text-center">
+                  {error}
+                </span>
+              )}
+              {!result && !error && (
+                <span className="text-lg font-medium text-gray-400">
+                  Selecciona una opción...
+                </span>
+              )}
+            </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default App;
